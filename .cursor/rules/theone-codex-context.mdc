@@ -1,0 +1,13 @@
+---
+description: TheOne project context — Codex vs skill-creator-plus; use when editing CODEX.md or skill docs
+globs: CODEX.md,**/.cursor/skills/**/*.md
+alwaysApply: false
+---
+
+# TheOne: Codex vs skill-creator-plus
+
+This project compares **OpenAI Codex** skill docs with **Claude skill-creator-plus**. When editing CODEX.md or skill files:
+
+- **CODEX.md** is the single source of truth for the comparison.
+- Use the project skill **theone-codex-skills** (`.cursor/skills/theone-codex-skills/SKILL.md`) for full context on locations, invocation, frontmatter, and distribution.
+- Preserve the structure and tone of CODEX.md (bulleted differences, neutral comparison).

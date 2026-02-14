@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Xcode
+*.xcuserstate
+xcuserdata/
+*.xcworkspace
+!default.xcworkspace
+DerivedData/
+build/
+
+# Backend (also has its own .gitignore)
+card-app-backend/node_modules
+card-app-backend/.next
+card-app-backend/.env*.local
