@@ -18,18 +18,27 @@ function getClientId(req: NextRequest): string {
 export async function POST(req: NextRequest) {
   try {
     const clientId = getClientId(req);
-    const { allowed, remaining } = checkRateLimit(clientId);
+    const { allowed, remaining } = await checkRateLimit(clientId);
     if (!allowed) {
       return NextResponse.json(
         { error: "Too many requests. Please try again in a minute." },
-        { status: 429, headers: { "X-RateLimit-Remaining": "0" } }
+        { status: 429, headers: { "X-RateLimit-Remaining": "0", "Retry-After": "60" } }
       );
     }
 
-    const body = await req.json();
+    let body: { imageBase64?: string; cardType?: string };
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON body" },
+        { status: 400 }
+      );
+    }
+
     const { imageBase64, cardType } = body;
 
-    if (!cardType || !VALID_CARD_TYPES.includes(cardType)) {
+    if (!cardType || !VALID_CARD_TYPES.includes(cardType as CardType)) {
       return NextResponse.json(
         { error: "Invalid card type. Use christmas, birthday, or valentines." },
         { status: 400 }
@@ -46,12 +55,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: result.error }, { status });
     }
 
-    return NextResponse.json({
-      url: result.url,
-      imageBase64: result.imageBase64,
-      error: result.error,
-    });
+    return NextResponse.json(
+      { imageBase64: result.imageBase64 },
+      { headers: { "X-RateLimit-Remaining": String(remaining) } }
+    );
   } catch (e) {
+    console.error("[generate-card] Unhandled error:", e);
     return NextResponse.json(
       { error: "Something went wrong. Please try again." },
       { status: 500 }

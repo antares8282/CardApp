@@ -163,7 +163,7 @@ struct ContentView: View {
 
         Task {
             do {
-                let result = await ApiClient.generateCard(image: image, cardType: selectedCardType)
+                let result = try await ApiClient.generateCard(image: image, cardType: selectedCardType)
                 await MainActor.run {
                     generatedImage = result
                     isGenerating = false

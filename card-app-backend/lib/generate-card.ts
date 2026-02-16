@@ -5,7 +5,7 @@ import type { CardType } from "./card-templates";
 import { getPrompt, getAspectRatio } from "./card-templates";
 
 const MODEL = "gemini-2.5-flash-image" as const;
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
+const MAX_IMAGE_BYTES = 3 * 1024 * 1024; // 3MB
 
 export interface GenerateCardInput {
   imageBase64: string;
@@ -30,7 +30,7 @@ export async function generateCard(
   const raw = imageBase64.replace(/^data:image\/\w+;base64,/, "");
   const buf = Buffer.from(raw, "base64");
   if (buf.length > MAX_IMAGE_BYTES) {
-    return { error: "Image too large (max 5MB)" };
+    return { error: "Image too large (max 3MB)" };
   }
 
   const prompt = getPrompt(cardType);

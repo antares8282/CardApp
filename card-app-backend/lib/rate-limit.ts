@@ -1,24 +1,21 @@
-const windowMs = 60_000; // 1 minute
-const maxRequests = 10;
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
-const store = new Map<
-  string,
-  { count: number; resetAt: number }
->();
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
 
-export function checkRateLimit(identifier: string): { allowed: boolean; remaining: number } {
-  const now = Date.now();
-  const entry = store.get(identifier);
+const ratelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, "60 s"),
+  analytics: true,
+  prefix: "cardapp",
+});
 
-  if (!entry || now > entry.resetAt) {
-    store.set(identifier, { count: 1, resetAt: now + windowMs });
-    return { allowed: true, remaining: maxRequests - 1 };
-  }
-
-  if (entry.count >= maxRequests) {
-    return { allowed: false, remaining: 0 };
-  }
-
-  entry.count++;
-  return { allowed: true, remaining: maxRequests - entry.count };
+export async function checkRateLimit(
+  identifier: string
+): Promise<{ allowed: boolean; remaining: number }> {
+  const { success, remaining } = await ratelimit.limit(identifier);
+  return { allowed: success, remaining };
 }
