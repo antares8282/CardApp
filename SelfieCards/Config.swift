@@ -7,7 +7,7 @@ enum Config {
         #if DEBUG
         return "http://localhost:3000"
         #else
-        return "https://your-deployed-backend.vercel.app"
+        return "https://card-app-tau-neon.vercel.app"
         #endif
     }
 }
