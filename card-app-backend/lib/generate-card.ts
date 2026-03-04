@@ -62,7 +62,7 @@ async function generateWithOpenAI(
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY not configured");
 
-  const openai = new OpenAI({ apiKey });
+  const openai = new OpenAI({ apiKey, maxRetries: 0 });
   const imageFile = new File([buf], "selfie.jpg", { type: "image/jpeg" });
 
   const response = await openai.images.edit({
