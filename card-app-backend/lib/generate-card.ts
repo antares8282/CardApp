@@ -67,12 +67,16 @@ export async function generateCard(
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
+    console.error("[generate-card] Gemini error:", message);
     if (message.includes("429") || message.includes("resource_exhausted")) {
       return { error: "Too many requests. Please try again in a minute." };
+    }
+    if (message.includes("401") || message.includes("API_KEY") || message.includes("api key") || message.includes("authentication")) {
+      return { error: "API key error: " + message.slice(0, 120) };
     }
     if (message.includes("400") || message.includes("invalid_argument")) {
       return { error: "Invalid image or request. Try a different photo." };
     }
-    return { error: "Something went wrong. Please try again." };
+    return { error: "Something went wrong: " + message.slice(0, 120) };
   }
 }
